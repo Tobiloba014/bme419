@@ -1,0 +1,37 @@
+{
+  "model": "2-D layered anisotropic volume conductor with phenomenological activating-function threshold",
+  "units": "SI internally; plots mm, mA, mV",
+  "assumptions": {
+    "slab_thickness_mm": 5.0,
+    "electrode_centers_x_mm": [
+      -5,
+      5
+    ],
+    "depth_mm": 0.65,
+    "csf_thicknesses_mm": [
+      2.0,
+      3.2,
+      4.4
+    ],
+    "reference_current_mA": 3.5,
+    "reference_threshold": "median 1mA activating-function index * reference current * fixed random excitability"
+  },
+  "at_reference_current": [
+    {
+      "csf_mm": 2.0,
+      "fraction_above_proxy_threshold": 0.5,
+      "residual": 1.4599484132766922e-14
+    },
+    {
+      "csf_mm": 3.2,
+      "fraction_above_proxy_threshold": 0.3090909090909091,
+      "residual": 1.5291970012487607e-14
+    },
+    {
+      "csf_mm": 4.4,
+      "fraction_above_proxy_threshold": 0.10909090909090909,
+      "residual": 1.6232781753295763e-14
+    }
+  ],
+  "limitations": "NOT physiological prediction, not ECAP, not NEURON; not tested against literature and no convergence study; no safety/efficacy conclusions."
+}
