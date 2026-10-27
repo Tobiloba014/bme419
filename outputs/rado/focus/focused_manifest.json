@@ -1,0 +1,227 @@
+[
+  {
+    "filename": "T8-10 - neuro_CSF-1.STL",
+    "component": "Cerebrospinal Fluid",
+    "vertices": 2138,
+    "faces": 4276,
+    "watertight": true,
+    "bounds_raw": [
+      [
+        48.6810302734375,
+        59.46966552734375,
+        59.43203353881836
+      ],
+      [
+        64.43226623535156,
+        87.08821105957031,
+        164.0363006591797
+      ]
+    ],
+    "extents_raw": [
+      15.751235961914062,
+      27.618545532226562,
+      104.60426712036133
+    ],
+    "units": "unverified"
+  },
+  {
+    "filename": "T8-10 - neuro_EpiduralSpace-1.STL",
+    "component": "Epidural Space",
+    "vertices": 1756,
+    "faces": 3512,
+    "watertight": true,
+    "bounds_raw": [
+      [
+        45.43602752685547,
+        57.16926574707031,
+        59.43203353881836
+      ],
+      [
+        67.6784439086914,
+        89.85980987548828,
+        164.93820190429688
+      ]
+    ],
+    "extents_raw": [
+      22.242416381835938,
+      32.69054412841797,
+      105.50616836547852
+    ],
+    "units": "unverified"
+  },
+  {
+    "filename": "T8-10 - neuro_GreyMater-1.STL",
+    "component": "Gray Matter",
+    "vertices": 4179,
+    "faces": 8354,
+    "watertight": true,
+    "bounds_raw": [
+      [
+        52.948760986328125,
+        62.5007438659668,
+        59.43203353881836
+      ],
+      [
+        59.57905960083008,
+        83.53760528564453,
+        162.87713623046875
+      ]
+    ],
+    "extents_raw": [
+      6.630298614501953,
+      21.036861419677734,
+      103.44510269165039
+    ],
+    "units": "unverified"
+  },
+  {
+    "filename": "T8-10 - neuro_Meninges-1.STL",
+    "component": "Meninges",
+    "vertices": 1780,
+    "faces": 3560,
+    "watertight": true,
+    "bounds_raw": [
+      [
+        48.182857513427734,
+        58.972259521484375,
+        59.43203353881836
+      ],
+      [
+        64.93260955810547,
+        87.56244659423828,
+        164.1927490234375
+      ]
+    ],
+    "extents_raw": [
+      16.749752044677734,
+      28.590187072753906,
+      104.76071548461914
+    ],
+    "units": "unverified"
+  },
+  {
+    "filename": "T8-10 - neuro_dorsal _roots_DRG_leads-1.STL",
+    "component": "DRG Lead Candidate 1",
+    "vertices": 2232,
+    "faces": 4460,
+    "watertight": true,
+    "bounds_raw": [
+      [
+        81.28459167480469,
+        73.17896270751953,
+        92.7232894897461
+      ],
+      [
+        82.64877319335938,
+        74.29396057128906,
+        93.97348022460938
+      ]
+    ],
+    "extents_raw": [
+      1.3641815185546875,
+      1.1149978637695312,
+      1.2501907348632812
+    ],
+    "units": "unverified"
+  },
+  {
+    "filename": "T8-10 - neuro_dorsal _roots_DRG_leads-2.STL",
+    "component": "DRG Lead Candidate 2",
+    "vertices": 2232,
+    "faces": 4460,
+    "watertight": true,
+    "bounds_raw": [
+      [
+        71.92977142333984,
+        73.84131622314453,
+        95.88819885253906
+      ],
+      [
+        73.31580352783203,
+        74.96591186523438,
+        97.17041778564453
+      ]
+    ],
+    "extents_raw": [
+      1.3860321044921875,
+      1.1245956420898438,
+      1.2822189331054688
+    ],
+    "units": "unverified"
+  },
+  {
+    "filename": "T8-10 - neuro_dorsal _roots_DRG_leads-3.STL",
+    "component": "DRG Lead Candidate 3",
+    "vertices": 2232,
+    "faces": 4460,
+    "watertight": true,
+    "bounds_raw": [
+      [
+        67.40824890136719,
+        72.87419128417969,
+        94.89830780029297
+      ],
+      [
+        68.86544036865234,
+        74.11100769042969,
+        96.30134582519531
+      ]
+    ],
+    "extents_raw": [
+      1.4571914672851562,
+      1.23681640625,
+      1.4030380249023438
+    ],
+    "units": "unverified"
+  },
+  {
+    "filename": "T8-10 - neuro_dorsal _roots_DRG_leads-4.STL",
+    "component": "DRG Lead Candidate 4",
+    "vertices": 2232,
+    "faces": 4460,
+    "watertight": true,
+    "bounds_raw": [
+      [
+        76.38664245605469,
+        73.25996398925781,
+        93.73859405517578
+      ],
+      [
+        77.82018280029297,
+        74.4551010131836,
+        95.08953094482422
+      ]
+    ],
+    "extents_raw": [
+      1.4335403442382812,
+      1.1951370239257812,
+      1.3509368896484375
+    ],
+    "units": "unverified"
+  },
+  {
+    "filename": "T8-10 - neuro_whitemater-1.STL",
+    "component": "White Matter",
+    "vertices": 5385,
+    "faces": 10770,
+    "watertight": true,
+    "bounds_raw": [
+      [
+        52.26959991455078,
+        61.56418228149414,
+        59.43203353881836
+      ],
+      [
+        60.523868560791016,
+        84.37723541259766,
+        163.15159606933594
+      ]
+    ],
+    "extents_raw": [
+      8.254268646240234,
+      22.813053131103516,
+      103.71956253051758
+    ],
+    "units": "unverified"
+  }
+]

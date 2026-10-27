@@ -1,10 +1,12 @@
-"""Inspect external STL anatomy/lead meshes without SolidWorks or COMSOL.
+r"""Inspect external STL anatomy/lead meshes without SolidWorks or COMSOL.
 
 Usage:
-  pip install trimesh numpy matplotlib
-  python tools/inspect_rado.py --input /path/to/RADO-SCS_3.0.zip --output outputs/rado
+    pip install trimesh numpy matplotlib
+
+    python tools/inspect_rado.py --input "C:\Users\tobil\Downloads\RADO-SCS_3.0.zip" --output outputs/rado
 
 Accepts an extracted STL directory or a ZIP containing STL files.
+
 This is geometry quality control, NOT meshing, FEM, or neural simulation.
 """
 import argparse

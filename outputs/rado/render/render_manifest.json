@@ -1,0 +1,77 @@
+[
+  {
+    "file": "RADO-SCS_3.0/STL_files/T8-10 - neuro_EpiduralSpace-1.STL",
+    "label": "Epidural space",
+    "points": 1756,
+    "faces": 3512,
+    "bounds_raw": [
+      45.43602752685547,
+      67.6784439086914,
+      57.16926574707031,
+      89.85980987548828,
+      59.43203353881836,
+      164.93820190429688
+    ],
+    "surface_manifold": true
+  },
+  {
+    "file": "RADO-SCS_3.0/STL_files/T8-10 - neuro_CSF-1.STL",
+    "label": "CSF",
+    "points": 2138,
+    "faces": 4276,
+    "bounds_raw": [
+      48.6810302734375,
+      64.43226623535156,
+      59.46966552734375,
+      87.08821105957031,
+      59.43203353881836,
+      164.0363006591797
+    ],
+    "surface_manifold": true
+  },
+  {
+    "file": "RADO-SCS_3.0/STL_files/T8-10 - neuro_Meninges-1.STL",
+    "label": "Meninges",
+    "points": 1780,
+    "faces": 3560,
+    "bounds_raw": [
+      48.182857513427734,
+      64.93260955810547,
+      58.972259521484375,
+      87.56244659423828,
+      59.43203353881836,
+      164.1927490234375
+    ],
+    "surface_manifold": true
+  },
+  {
+    "file": "RADO-SCS_3.0/STL_files/T8-10 - neuro_whitemater-1.STL",
+    "label": "White matter",
+    "points": 5385,
+    "faces": 10770,
+    "bounds_raw": [
+      52.26959991455078,
+      60.523868560791016,
+      61.56418228149414,
+      84.37723541259766,
+      59.43203353881836,
+      163.15159606933594
+    ],
+    "surface_manifold": true
+  },
+  {
+    "file": "RADO-SCS_3.0/STL_files/T8-10 - neuro_GreyMater-1.STL",
+    "label": "Gray matter",
+    "points": 4179,
+    "faces": 8354,
+    "bounds_raw": [
+      52.948760986328125,
+      59.57905960083008,
+      62.5007438659668,
+      83.53760528564453,
+      59.43203353881836,
+      162.87713623046875
+    ],
+    "surface_manifold": true
+  }
+]
