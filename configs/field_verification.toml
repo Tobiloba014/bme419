@@ -1,0 +1,5 @@
+intervals = [16, 32, 64, 128]
+length_m = 0.048
+depth_m = 0.020
+sigma_x_s_m = 0.60
+sigma_y_s_m = 0.083

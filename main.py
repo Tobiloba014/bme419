@@ -1,8 +1,8 @@
 """Reproducible 2-D electrical volume conductor + activation-index prototype.
 
 Educational research starting point only. Not a validated neuron, ECAP, or patient model.
-Run: python scs_field_model.py
-Requires: numpy scipy pandas matplotlib
+Run: python main.py
+Requires: numpy scipy matplotlib
 """
 from pathlib import Path
 import csv
@@ -12,8 +12,7 @@ import numpy as np
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
-from scipy.sparse import diags
-from scipy.sparse.linalg import spsolve
+from scs.field.planar import solve_dirichlet
 
 OUT = Path(__file__).resolve().parent
 # Lengths in meters. x is head-to-foot (longitudinal); y is depth from posterior surface.
@@ -56,31 +55,8 @@ def solve_field(csf_mm):
     a /= np.sum(a)*DX*DY*THICKNESS
     b /= np.sum(b)*DX*DY*THICKNESS
     source = 1e-3 * (a - b)
-    # Interior-only finite-volume divergence discretization, Dirichlet outer edge.
-    ix = np.arange(1, NX-1); iy = np.arange(1, NY-1)
-    shape = (NY-2, NX-2)
-    ce = 2*sx[1:-1, 1:-1]*sx[1:-1, 2:] / (sx[1:-1, 1:-1]+sx[1:-1, 2:])/DX**2
-    cw = 2*sx[1:-1, 1:-1]*sx[1:-1, :-2] / (sx[1:-1, 1:-1]+sx[1:-1, :-2])/DX**2
-    cn = 2*sy[1:-1, 1:-1]*sy[2:, 1:-1] / (sy[1:-1, 1:-1]+sy[2:, 1:-1])/DY**2
-    cs = 2*sy[1:-1, 1:-1]*sy[:-2, 1:-1] / (sy[1:-1, 1:-1]+sy[:-2, 1:-1])/DY**2
-    n = (NY-2)*(NX-2)
-    p = np.arange(n).reshape(shape)
-    # build sparse COO matrix: keep only within interior neighbor edges
-    from scipy.sparse import coo_matrix
-    rows=[p.ravel()]; cols=[p.ravel()]; vals=[(ce+cw+cn+cs).ravel()]
-    for conductance, dr, dc in [(-ce,0,1),(-cw,0,-1),(-cn,1,0),(-cs,-1,0)]:
-        r0=slice(max(0,-dr),shape[0]-max(0,dr))
-        c0=slice(max(0,-dc),shape[1]-max(0,dc))
-        r1=slice(max(0,dr),shape[0]-max(0,-dr))
-        c1=slice(max(0,dc),shape[1]-max(0,-dc))
-        rows.append(p[r0,c0].ravel()); cols.append(p[r1,c1].ravel()); vals.append(conductance[r0,c0].ravel())
-    A=coo_matrix((np.concatenate(vals), (np.concatenate(rows),np.concatenate(cols))),shape=(n,n)).tocsr()
-    sol=spsolve(A, source[1:-1,1:-1].ravel())
-    v=np.zeros((NY,NX)); v[1:-1,1:-1]=sol.reshape(shape)
-    # Numerical check of algebraic residual; not a convergence validation.
-    residual=np.linalg.norm(A @ sol - source[1:-1,1:-1].ravel()) / max(np.linalg.norm(source[1:-1,1:-1].ravel()),1e-30)
+    v, residual = solve_dirichlet(sx, sy, source, DX, DY)
     return v, white_start, residual
-
 
 def fiber_proxy(v, white_start):
     """Non-biophysical stimulation activation INDEX, based on the activating function.
