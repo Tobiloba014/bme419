@@ -2,7 +2,7 @@
 
 ## What we have already simulated
 
-The repository root's `main.py` solves a simplified **2-D layered volume conductor** with anisotropic white matter and an artificial bipolar source/sink. It sweeps three CSF thicknesses (2.0, 3.2, and 4.4 mm) and outputs electrical potential maps and a **phenomenological activating-function threshold proxy**.
+The original demo in `examples/legacy_2d/main.py` solves a simplified **2-D layered volume conductor** with anisotropic white matter and an artificial bipolar source/sink. It sweeps three CSF thicknesses (2.0, 3.2, and 4.4 mm) and outputs electrical potential maps and a **phenomenological activating-function threshold proxy**.
 
 This is not a neuron model. The plotted fraction above the artificial threshold is **not a clinical estimate of recruited axons or an ECAP**. The code uses synthetic excitability, idealized source placement, and zero-potential outer boundaries. A small algebraic residual is not a mesh-convergence or biological validation test.
 
