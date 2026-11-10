@@ -36,11 +36,9 @@ Keep the [RADO-SCS 3.0 archive](https://zenodo.org/records/3715368) locally.
 The runner reads the five required trajectories and diameter data directly
 from the ZIP. Commit scripts, documentation, and small result files to GitHub.
 
-Use the [existing NEURON setup instructions](materials_axon_pilot.md#reproduction).
-From the repository root, with the ZIP one directory above it:
+Follow the [main workflow instructions](../README.md). To reproduce the finer
+run, copy the config, change `dt_ms` to `0.0025`, and pass the copy with
+`--config`. Choose a new output directory.
 
-```sh
-python -m scs.neural.rado_material_screen --archive ../RADO-SCS_3.0.zip --model /tmp/bme419-mrg --output runs/material_screen.csv
-```
-
-Append `--dt-ms 0.0025` and choose another output path for the finer run.
+The original combined CSVs under `results/` are reference runs from before
+the split into driver and axon response files.

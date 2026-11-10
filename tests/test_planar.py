@@ -2,7 +2,7 @@ import unittest
 
 import numpy as np
 
-from main import CSF_THICKNESSES_MM, CURRENTS_MA, FIBER_EXCITABILITY, fiber_proxy, solve_field
+from examples.legacy_2d.main import CSF_THICKNESSES_MM, CURRENTS_MA, FIBER_EXCITABILITY, fiber_proxy, solve_field
 from scs.field.verify import convergence
 
 

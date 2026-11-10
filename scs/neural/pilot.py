@@ -6,7 +6,7 @@ from pathlib import Path
 import numpy as np
 from scipy.interpolate import RegularGridInterpolator
 
-from main import CSF_THICKNESSES_MM, X, Y, solve_field
+from examples.legacy_2d.main import CSF_THICKNESSES_MM, X, Y, solve_field
 
 
 def run(model, output, dt_ms):

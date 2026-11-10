@@ -1,145 +1,77 @@
-"""Reproducible 2-D electrical volume conductor + activation-index prototype.
-
-Educational research starting point only. Not a validated neuron, ECAP, or patient model.
-Run: python main.py
-Requires: numpy scipy matplotlib
-"""
-from pathlib import Path
+"""Run the RADO electrode materials comparison."""
+import argparse
 import csv
-import json
+import tomllib
+from pathlib import Path
 
 import numpy as np
-import matplotlib
-matplotlib.use('Agg')
-import matplotlib.pyplot as plt
-from scs.field.planar import solve_dirichlet
 
-OUT = Path(__file__).resolve().parent
-# Lengths in meters. x is head-to-foot (longitudinal); y is depth from posterior surface.
-DX, DY = 0.3e-3, 0.3e-3
-X = np.arange(-24e-3, 24e-3 + DX/2, DX)
-Y = np.arange(0, 20e-3 + DY/2, DY)
-NX, NY = len(X), len(Y)
-XX, YY = np.meshgrid(X, Y)
-THICKNESS = 5e-3  # out-of-plane thickness; assumed for 2-D planar current conservation
-EPI_END = 1.2e-3
-# Illustrative SI electrical conductivities; not complete validated tissue parameterization.
-SIG_EPI = 0.15
-SIG_CSF = 1.70
-SIG_WM_X = 0.60  # longitudinal white matter anisotropy
-SIG_WM_Y = 0.083 # depth direction
-CURRENTS_MA = np.linspace(0, 12, 121)
-CSF_THICKNESSES_MM = [2.0, 3.2, 4.4]
-RNG = np.random.default_rng(419)
-# Same fiber-specific variability across postural conditions. Not clinical axon thresholds.
-FIBER_EXCITABILITY = RNG.lognormal(mean=0, sigma=0.22, size=110)
+from scs.electrode.driver import material_cases
+from scs.field.bipolar import extracellular_mv_per_ma
+from scs.geometry.rado import read_fibers
+from scs.neural.mrg import load_axon, stimulate
 
 
-def tissue_properties(csf_mm):
-    white_start = EPI_END + csf_mm * 1e-3
-    sig_x = np.select([YY < EPI_END, YY < white_start], [SIG_EPI, SIG_CSF], SIG_WM_X)
-    sig_y = np.select([YY < EPI_END, YY < white_start], [SIG_EPI, SIG_CSF], SIG_WM_Y)
-    return sig_x, sig_y, white_start
+def run(config_path, archive, model, output):
+    config_bytes = config_path.read_bytes()
+    config = tomllib.loads(config_bytes.decode())
+    geometry = config["geometry"]
+    driver = config["driver"]
+    neural = config["neural"]
+    dt_ms = neural["dt_ms"]
+    phase_us = driver["phase_us"]
+    gap_us = neural["gap_us"]
+    if dt_ms <= 0 or phase_us <= 0 or gap_us < 0 or 2 * phase_us + gap_us >= 3500:
+        raise ValueError("The pulse must fit inside the 4 ms recording window")
+    for duration_us in (500, phase_us, gap_us, 4000):
+        steps = duration_us / (1000 * dt_ms)
+        if not np.isclose(steps, round(steps), rtol=0, atol=1e-9):
+            raise ValueError("Pulse edges and recording duration must align with the time step")
 
+    ids = geometry["fiber_ids"]
+    fibers = read_fibers(archive, ids)
+    center = fibers[0][110]
+    cathode = center + geometry["cathode_offset_m"]
+    anode = center + geometry["anode_offset_m"]
+    sections = load_axon(model)
+    materials = list(material_cases(driver, config["materials"]))
+    controls = [
+        {"case": "zero current", "delivered_mA": 0},
+        {"case": "ideal current", "delivered_mA": driver["requested_ma"]},
+    ]
 
-def solve_field(csf_mm):
-    """Solve -div(sigma grad(V))=q, with V=0 on the entire outer boundary.
-    q: volumetric source-sink in A/m^3 equivalent to paired contacts within a slab.
-    """
-    sx, sy, white_start = tissue_properties(csf_mm)
-    # Smoothized active/return current sources inside superficial epidural domain.
-    # Normalized source and sink integrate to +/-1 mA in the 5mm extruded slab.
-    def gaussian_contact(x0):
-        return np.exp(-0.5*((XX-x0)/0.65e-3)**2 - 0.5*((YY-0.65e-3)/0.27e-3)**2)
-    a, b = gaussian_contact(-5e-3), gaussian_contact(+5e-3)
-    a /= np.sum(a)*DX*DY*THICKNESS
-    b /= np.sum(b)*DX*DY*THICKNESS
-    source = 1e-3 * (a - b)
-    v, residual = solve_dirichlet(sx, sy, source, DX, DY)
-    return v, white_start, residual
-
-def fiber_proxy(v, white_start):
-    """Non-biophysical stimulation activation INDEX, based on the activating function.
-    Returns one score per hypothetical fiber, not actual action potentials.
-    Fibers run along x, placed at relative depths inside dorsal-column-like white matter.
-    """
-    rel_depth = np.linspace(0.40e-3, 3.00e-3, len(FIBER_EXCITABILITY))
-    fibers_y = white_start + rel_depth
-    curvature = np.gradient(np.gradient(v, DX, axis=1), DX, axis=1)
-    xmask = (X>=-14e-3)&(X<=14e-3)
-    scores=[]
-    for y in fibers_y:
-        row=np.array([np.interp(y, Y, curvature[:,j]) for j in np.where(xmask)[0]])
-        # Absolute magnitude is an activation INDEX only, not a correct cable response.
-        scores.append(np.max(np.abs(row)))
-    return np.asarray(scores), fibers_y
-
-
-def save_field_figure(fields):
-    fig, axes=plt.subplots(1,3,figsize=(13.0,4.2),layout='constrained',sharex=True,sharey=True)
-    vmax=max(np.percentile(np.abs(d['v']),99.3) for d in fields)
-    for ax,d in zip(axes,fields):
-        img=ax.imshow(d['v']*1e3, origin='lower', extent=[X[0]*1e3,X[-1]*1e3,Y[0]*1e3,Y[-1]*1e3],aspect='auto',cmap='RdBu_r',vmin=-vmax*1e3,vmax=vmax*1e3)
-        ax.axhline(EPI_END*1e3,color='white',linestyle=':',linewidth=1.4)
-        ax.axhline(d['start']*1e3,color='white',linestyle='--',linewidth=1.6)
-        ax.scatter([-5,5],[.65,.65],c=['black','white'],edgecolor='black',s=35,zorder=5)
-        ax.set_title(f"CSF thickness {d['csf']:.1f} mm")
-        ax.set_xlabel('Longitudinal distance (mm)')
-        ax.set_ylim(12,0)
-    axes[0].set_ylabel('Depth below dorsal surface (mm)')
-    cbar=fig.colorbar(img,ax=axes,shrink=.84,pad=.015); cbar.set_label('Extracellular potential (mV) per 1 mA')
-    fig.suptitle('2-D layered electrical field model: simulated postural geometries',fontsize=14,weight='bold')
-    fig.savefig(OUT/'01_electric_field.png',dpi=190,facecolor='white'); plt.close(fig)
-
-
-def save_recruitment_figure(results, reference_current):
-    fig,ax=plt.subplots(figsize=(8,5.2),layout='constrained')
-    for d in results:
-        ax.plot(CURRENTS_MA,100*d['fraction'],lw=2.3,label=f"CSF {d['csf']:.1f} mm")
-    ax.axvline(reference_current,color='gray',lw=1.5,ls='--',label=f'Reference {reference_current:.1f} mA')
-    ax.set(xlabel='Stimulation current (mA)',ylabel='Hypothetical fibers above activation-index threshold (%)',title='Postural sensitivity of a simplified activation proxy')
-    ax.set_ylim(-2,102); ax.set_xlim(0,12); ax.grid(alpha=.22); ax.legend()
-    fig.savefig(OUT/'02_activation_proxy.png',dpi=190,facecolor='white'); plt.close(fig)
+    output.mkdir(parents=True, exist_ok=False)
+    (output / "run_config.toml").write_bytes(config_bytes)
+    with (output / "driver.csv").open("w", newline="") as stream:
+        writer = csv.DictWriter(stream, fieldnames=list(materials[0]), lineterminator="\n")
+        writer.writeheader()
+        writer.writerows(materials)
+    with (output / "axon_response.csv").open("w", newline="") as stream:
+        writer = csv.writer(stream, lineterminator="\n")
+        writer.writerow([
+            "axon_id", "case", "dt_ms", "delivered_mA", "axon_external_peak_to_peak_mV",
+            "left_peak_mV", "right_peak_mV", "left_cross_ms", "right_cross_ms",
+        ])
+        for index, coordinates in zip(ids, fibers, strict=True):
+            gain = extracellular_mv_per_ma(
+                coordinates, cathode, anode, geometry["conductivity_s_m"]
+            )
+            for case in controls + materials:
+                current_ma = case["delivered_mA"]
+                amplitudes = current_ma * gain
+                response = stimulate(sections, amplitudes, dt_ms, phase_us, gap_us)
+                writer.writerow([index, case["case"], dt_ms, current_ma, np.ptp(amplitudes), *response])
 
 
 def main():
-    fields=[]
-    for csf in CSF_THICKNESSES_MM:
-        v,start,residual=solve_field(csf)
-        scores,y=fiber_proxy(v,start)
-        fields.append(dict(csf=csf,v=v,start=start,residual=residual,scores=scores,y=y))
-    # Fixed phenomenological threshold: reference 3.5 mA at median baseline score.
-    # Must NOT be interpreted as measured human activation threshold.
-    REF_CURRENT=3.5
-    threshold=REF_CURRENT * np.median(fields[0]['scores']) * FIBER_EXCITABILITY
-    for d in fields:
-        d['fraction']=np.mean(CURRENTS_MA[:,None]*d['scores'][None,:] >= threshold[None,:],axis=1)
-    save_field_figure(fields)
-    save_recruitment_figure(fields,REF_CURRENT)
-    # Plot activation-index distributions at a common current.
-    fig,ax=plt.subplots(figsize=(8,4.8),layout='constrained')
-    for d in fields:
-        ax.plot(np.linspace(0.4,3.0,len(d['scores'])), d['scores']/np.median(fields[0]['scores']),lw=2,label=f"CSF {d['csf']:.1f} mm")
-    ax.set(xlabel='Fiber depth into white matter (mm)',ylabel='Normalized activating-function index per mA',title='Electrical sensitivity along longitudinal fiber paths')
-    ax.grid(alpha=.2);ax.legend();fig.savefig(OUT/'03_fiber_sensitivity.png',dpi=190,facecolor='white');plt.close(fig)
-    with (OUT/'sweep_results.csv').open('w',newline='') as f:
-        w=csv.writer(f);w.writerow(['csf_thickness_mm','current_mA','activation_proxy_fraction','linear_system_relative_residual'])
-        for d in fields:
-            for i,cur in enumerate(CURRENTS_MA):w.writerow([d['csf'],round(float(cur),4),round(float(d['fraction'][i]),6),float(d['residual'])])
-    summary={
-        'model':'2-D layered anisotropic volume conductor with phenomenological activating-function threshold',
-        'units':'SI internally; plots mm, mA, mV',
-        'assumptions':{'slab_thickness_mm':THICKNESS*1e3, 'electrode_centers_x_mm':[-5,5], 'depth_mm':0.65,
-                       'csf_thicknesses_mm':CSF_THICKNESSES_MM,'reference_current_mA':REF_CURRENT,
-                       'reference_threshold':'median 1mA activating-function index * reference current * fixed random excitability'},
-        'at_reference_current':[
-             dict(csf_mm=d['csf'], fraction_above_proxy_threshold=float(np.interp(REF_CURRENT,CURRENTS_MA,d['fraction'])), residual=float(d['residual'])) for d in fields
-        ],
-        'limitations':'NOT physiological prediction, not ECAP, not NEURON; not tested against literature and no convergence study; no safety/efficacy conclusions.'
-    }
-    (OUT/'summary.json').write_text(json.dumps(summary,indent=2))
-    for d in fields:
-        print(f"CSF {d['csf']} mm | proxy recruitment @ {REF_CURRENT} mA {np.interp(REF_CURRENT,CURRENTS_MA,d['fraction']):.1%} | linear residual {d['residual']:.1e}")
-    print('Saved three plots, CSV and summary JSON.')
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--config", type=Path, default=Path("configs/material_comparison.toml"))
+    parser.add_argument("--archive", type=Path, required=True)
+    parser.add_argument("--model", type=Path, required=True)
+    parser.add_argument("--output", type=Path, required=True)
+    args = parser.parse_args()
+    run(args.config, args.archive, args.model, args.output)
 
-if __name__=='__main__':main()
+
+if __name__ == "__main__":
+    main()
