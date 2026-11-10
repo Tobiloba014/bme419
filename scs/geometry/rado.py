@@ -17,7 +17,6 @@ def read_fibers(archive, fiber_ids):
         fibers = []
         for index in fiber_ids:
             coords = array(f"axon_{index}")
-            # Center a 21-node window on the trajectory's middle node.
             middle = ((len(coords) - 1) // 22) * 11
             window = coords[middle - 110:middle + 111]
             if not np.isclose(diameters[index], 10) or window.shape != (221, 3):

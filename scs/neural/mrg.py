@@ -5,8 +5,11 @@ import numpy as np
 def load_axon(model):
     from neuron import h, load_mechanisms
 
-    if not load_mechanisms(str(model)):
-        raise RuntimeError("Compile ModelDB 3810 with nrnivmodl first")
+    dll = model / "nrnmech.dll"
+    if dll.is_file():
+        h.nrn_load_dll(str(dll.resolve()))
+    elif not load_mechanisms(str(model)):
+        raise RuntimeError(f"No compiled NEURON mechanisms found in {model}")
     setup = (model / "MRGaxon.hoc").read_text().split("//intracellular stimulus//", 1)[0]
     if not h(setup.replace('load_proc("nrnmainmenu")', "")):
         raise RuntimeError("Could not initialize ModelDB 3810")

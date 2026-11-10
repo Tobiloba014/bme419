@@ -2,6 +2,7 @@
 import argparse
 import csv
 import tomllib
+from datetime import datetime
 from pathlib import Path
 
 import numpy as np
@@ -64,13 +65,24 @@ def run(config_path, archive, model, output):
 
 
 def main():
+    root = Path(__file__).resolve().parent
+    archive = root / "data" / "RADO-SCS_3.0.zip"
+    if not archive.is_file():
+        archive = Path.home() / "Downloads" / archive.name
+    run_name = datetime.now().strftime("%Y%m%d-%H%M%S-%f")
+
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--config", type=Path, default=Path("configs/material_comparison.toml"))
-    parser.add_argument("--archive", type=Path, required=True)
-    parser.add_argument("--model", type=Path, required=True)
-    parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--config", type=Path, default=root / "configs" / "material_comparison.toml")
+    parser.add_argument("--archive", type=Path, default=archive)
+    parser.add_argument("--model", type=Path, default=root / "data" / "3810")
+    parser.add_argument("--output", type=Path, default=root / "runs" / run_name)
     args = parser.parse_args()
+    if not args.archive.is_file():
+        parser.error("Place RADO-SCS_3.0.zip in Downloads or the project's data folder.")
+    if not (args.model / "MRGaxon.hoc").is_file():
+        parser.error(f"Place the compiled ModelDB 3810 folder at {args.model}.")
     run(args.config, args.archive, args.model, args.output)
+    print(f"Results saved to {args.output.resolve()}")
 
 
 if __name__ == "__main__":
