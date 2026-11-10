@@ -1,13 +1,4 @@
-"""Render RADO-SCS anatomical STL surfaces (no CAD software needed).
-
-Install: python -m pip install pyvista vtk numpy
-Run:
-  python render_rado_pyvista.py --input "C:/Users/tobil/Downloads/RADO-SCS_3.0.zip"
-Optional: --include-drg, --off-screen, --output outputs/rado/render
-
-Geometry visualization ONLY: NOT an FEM mesh or a physiological simulation.
-STLs contain no reliable coordinate units; axes therefore show raw units.
-"""
+"""Render RADO-SCS anatomical STL surfaces in PyVista."""
 import argparse
 import json
 import tempfile
@@ -59,13 +50,19 @@ def select_sources(source, names):
 
 
 def main():
+    root = Path(__file__).resolve().parent
+    archive = root / "data" / "RADO-SCS_3.0.zip"
+    if not archive.is_file():
+        archive = Path.home() / "Downloads" / archive.name
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--input', required=True)
-    parser.add_argument('--output', default='outputs/rado/render')
+    parser.add_argument('--input', type=Path, default=archive)
+    parser.add_argument('--output', type=Path, default=root / 'runs' / 'rado-render')
     parser.add_argument('--include-drg', action='store_true', help='Show DRG candidates, NOT confirmed epidural SCS contacts')
     parser.add_argument('--off-screen', action='store_true', help='Save PNG without opening a 3D window')
     args = parser.parse_args()
-    out = Path(args.output)
+    if not args.input.exists():
+        parser.error("Place RADO-SCS_3.0.zip in Downloads or the project's data folder.")
+    out = args.output
     out.mkdir(parents=True, exist_ok=True)
     requested = dict(TISSUES)
     if args.include_drg:
