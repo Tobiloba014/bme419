@@ -24,6 +24,13 @@ Each run creates a new folder under `runs/`. It contains `driver.csv`,
 With PyVista installed, open `render_rado_pyvista.py` and press **Run**.
 It uses the same ZIP locations and saves under `runs/rado-render/`.
 
+## Plot the results
+
+With Matplotlib installed in the project interpreter, open
+`tools/plot_results.py` and press **Run**. It uses the latest completed
+simulation and saves `delivered_current.png` and `axon_response_heatmap.png`
+in the same run folder.
+
 ## Where things live
 
 | Path | Purpose |
