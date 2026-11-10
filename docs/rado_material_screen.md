@@ -1,31 +1,4 @@
-# BME 419 materials comparison using RADO axon paths
-
-## Results
-
-| Material | Estimated voltage for 3.5 mA | Delivered current at 5 V ceiling | Biphasic output energy | Both end nodes crossed 0 mV |
-| --- | ---: | ---: | ---: | ---: |
-| Pt–Ir | 13.68 V | 1.280 mA | 2.56 µJ | 1/5 |
-| IrOx (SIROF charge value) | 422.10 V | 0.041 mA | 0.083 µJ | 0/5 |
-| PEDOT:PSS | 3.99 V | 3.500 mA | 5.59 µJ | 5/5 |
-| TiN | 34.76 V | 0.504 mA | 1.01 µJ | 1/5 |
-
-![Delivered current and modeled fiber responses](../results/rado_material_comparison.svg)
-
-## Report-ready interpretation
-
-Under a common 5 V driver ceiling and a requested current of 3.5 mA, the
-PEDOT:PSS scenario delivered the full pulse and elicited bilateral
-end-node voltage crossings in all five sampled axons. Pt–Ir and TiN each
-elicited crossings in one of five axons, and IrOx elicited none. The
-lower energy of the other cases reflects reduced delivered current.
-The comparison supports PEDOT:PSS as the leading candidate **for pulse
-delivery under the stated screening assumptions**. It does not
-establish battery-life improvement or an energy ranking at matched
-neural response. Under the fixed current distribution in this model,
-all candidates would produce the same field and axon response at equal
-delivered current. At that matched current, the resistive model predicts
-the lowest output energy for the PEDOT:PSS scenario, conditional on the
-driver being able to supply the required voltage for each candidate.
+# Running the RADO materials simulation
 
 ## Methods and limitations
 
