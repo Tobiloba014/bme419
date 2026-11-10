@@ -1,0 +1,38 @@
+# RADO coordinates are in metres. These offsets define idealized contacts.
+[geometry]
+fiber_ids = [1930, 1940, 1950, 1960, 1970]
+cathode_offset_m = [0.003, 0.0, -0.005]
+anode_offset_m = [0.003, 0.0, 0.005]
+conductivity_s_m = 0.15
+
+[driver]
+contact_area_mm2 = 1.0
+tissue_ohm = 600.0
+requested_ma = 3.5
+ceiling_v = 5.0
+phase_us = 200.0
+
+[neural]
+dt_ms = 0.005
+gap_us = 50.0
+
+# Nominal team-table values. See docs/rado_material_screen.md for assumptions.
+[materials."Pt-Ir"]
+impedance_ohm = 21200
+measurement_area_mm2 = 0.078
+charge_injection_mc_cm2 = 0.30
+
+[materials."IrOx (SIROF)"]
+impedance_ohm = 200000
+measurement_area_mm2 = 0.300
+charge_injection_mc_cm2 = 1.90
+
+[materials."PEDOT:PSS"]
+impedance_ohm = 900
+measurement_area_mm2 = 0.300
+charge_injection_mc_cm2 = 1.36
+
+[materials.TiN]
+impedance_ohm = 31100
+measurement_area_mm2 = 0.150
+charge_injection_mc_cm2 = 6.30
