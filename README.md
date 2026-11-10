@@ -7,14 +7,22 @@ electrical field, and NEURON.
 
 1. Set the project interpreter to Python 3.12 with NumPy and NEURON installed.
 2. Keep `RADO-SCS_3.0.zip` in Downloads or in the project's `data/` folder.
-3. Put the [ModelDB 3810 files](https://github.com/ModelDBRepository/3810) in
-   `data/3810/` with `MRGaxon.hoc` and the compiled NEURON mechanism
-   (`nrnmech.dll` for a Windows DLL build).
+3. Download the [ModelDB 3810 ZIP](https://github.com/ModelDBRepository/3810/archive/b15daeda6ea368df0198d257f339cf5e840cf31c.zip).
+   Extract it so `MRGaxon.hoc` and `AXNODE.mod` are directly inside `data/3810/`.
+   In the Windows NEURON installer setup, open the mechanism compiler
+   (`mknrndll` if provided), select that folder, and build `nrnmech.dll`.
+   See the [NEURON mechanism instructions](https://www.neuronsimulator.org/en/latest/courses/using_nmodl_files.html)
+   for the compiler supplied with the installed version.
 4. Open `main.py` in the IDE and press **Run**.
 
 Each run creates a new folder under `runs/`. It contains `driver.csv`,
 `axon_response.csv`, and the settings used in `run_config.toml`. The
 `case` column connects the driver and axon data.
+
+## View the anatomy
+
+With PyVista installed, open `render_rado_pyvista.py` and press **Run**.
+It uses the same ZIP locations and saves under `runs/rado-render/`.
 
 ## Where things live
 

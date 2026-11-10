@@ -80,7 +80,7 @@ def main():
     if not args.archive.is_file():
         parser.error("Place RADO-SCS_3.0.zip in Downloads or the project's data folder.")
     if not (args.model / "MRGaxon.hoc").is_file():
-        parser.error(f"Place the compiled ModelDB 3810 folder at {args.model}.")
+        parser.error(f"Missing {args.model / 'MRGaxon.hoc'}. See the NEURON setup in README.md.")
     run(args.config, args.archive, args.model, args.output)
     print(f"Results saved to {args.output.resolve()}")
 
